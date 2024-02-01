@@ -26,3 +26,6 @@ if __name__ == "__main__":
     print("matrix: ", A)
     # call the function
     print("is convex: ", is_pos_def(A))
+
+    C = np.array([[4,  -2], [-2, 2]])
+    print("matrix C is convex: ", is_pos_def(C))
