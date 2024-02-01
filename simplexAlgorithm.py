@@ -12,28 +12,12 @@ def simplex_algorithm(A, b, c, z, initial_basis):
     """
 
     # Initialize basis with the indices of the slack variables
-
-    # make sure that the basis is always the last columns of A
-    rearrange_basis(A, c, initial_basis)
-    print("A: ", A)
-    print("c: ", c)
-    print("initial basis: ", initial_basis)
-
     num_variables = A.shape[1]
     num_slack_variables = A.shape[0]
-    print("num variables: ", num_variables)
-    print("num slack variables: ", num_slack_variables)
-    basis = list(range(num_variables - num_slack_variables, num_variables))
-    print("basis: ", basis)
-    print(list(range(num_variables - num_slack_variables, num_variables)))
+    basis = initial_basis
 
     # Step 1: Convert to canonical form (assume a basic feasible solution)
-    A, b, c, z, x = get_canonical_form(A, b, c, z, basis)
-    print("after get_canonical_form: ")
-    print("A: ", A)
-    print("b: ", b)
-    print("c: ", c)
-    print("z: ", z)
+    A, b, c, z = get_canonical_form(A, b, c, z, basis)
 
     # Step 2: Check if current solution is optimal (if all c_N <= 0)
     non_basic_indices = [i for i in range(num_variables) if i not in basis]
@@ -45,8 +29,7 @@ def simplex_algorithm(A, b, c, z, initial_basis):
         print("Optimal solution found")
         print("x: ", x, "basis: ", basis)
         print("z: ", z)
-        return
-        #return x, z, "Optimal solution found"
+        return A, b, c, z, basis
 
     # Step 3: Select an entering variable (index k from non-basic variables)
     # Bland's rule: Select the first index k such that c_k > 0
@@ -57,17 +40,28 @@ def simplex_algorithm(A, b, c, z, initial_basis):
     A_k = A[:, k]
     if np.all(A_k <= 0):
         print("LP is unbounded: ", A_k, k)
-        # return None, None, "LP is unbounded"
+        return A, b, c, z, basis
 
     # Step 5: Determine the leaving variable (index r)
     ratios = np.divide(b, A_k, out=np.full_like(b, np.inf, dtype=float), where=A_k > 0)
     r = np.argmin(ratios)
+    print("ratios: ", ratios)
+    print("t (=smallest ratio): ", ratios[r])
 
     # Step 6 and 7: Perform the pivot
     # Replace the r-th basis element with the entering variable k
     basis[r] = k
 
     # Step 8 -> if there is an improvement, run the algorithm again
+
+    # after iteration of simplex algorithm
+    print("AFTER iteration of simplex algorithm: ")
+    print("A: ", A)
+    print("b: ", b)
+    print("c: ", c)
+    print("z: ", z)
+    print("basis: ", basis)
+    return A, b, c, z, basis
 
 
 def rearrange_basis(A, c, basis):
@@ -90,26 +84,27 @@ if __name__ == "__main__":
     print("Simplex Algorithm")
     print("Caution: This implementation is only step-by-step, there is no loop, so if there is an improvement, you have to run the algorithm again")
 
-    # Define the matrix A, vector b, and cost vector c
+    # example 2
     A = np.array([
-        [-1, 1, 0, 2],
-        [1, 0, 1, -3]
+        [2, 5, 1, 0, 3, 1],
+        [0, 2, 2, -4, 2, -4],
+        [3, 5, 1, 2, 6, 3]
     ])
-    b = np.array([2, 1])
-    c = np.array([-1, 0, 0, 2])
+    b = np.array([9 / 4, 0, 4])
+    c = np.array([2, -4, 1, 4, 8, 4])
 
     # objective value
     z = 0
     # define the initial basis
-    initial_basis = np.array([1, 2])
-
-    # get canonical form
-    A, b, c, z, x = get_canonical_form(A, b, c, z, initial_basis)
+    initial_basis = np.array([0, 2, 3])
     print("BEFORE SIMPLEX ALGORITHM: ")
-    print_problem_information(A, b, c, z, x)
+    print_problem_information(A, b, c, z)
 
     # Perform the Simplex algorithm
-    simplex_algorithm(A, b, c, z, initial_basis)
+    A, b, c, z, basis = simplex_algorithm(A, b, c, z, initial_basis)
+    print("**NEXT ITERATION**")
+    # Perform the Simplex algorithm
+    A, b, c, z, basis = simplex_algorithm(A, b, c, z, basis)
     # solution, objective_value, status = simplex_algorithm(A, b, c, z, initial_basis)
     #
     # print(f"Status: {status}")

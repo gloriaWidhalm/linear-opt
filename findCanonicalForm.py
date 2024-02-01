@@ -19,6 +19,23 @@ def get_canonical_form(A, b, c, z, B):
     # modify b and A (update to get the canonical form)
     b = np.linalg.inv(A_B) @ b
     A = np.linalg.inv(A_B) @ A
+    return A, b, c, z
+
+
+def get_canonical_form_with_x(A, b, c, z, B):
+    # A_B is the basis part of A (sub-matrix of A with columns in B)
+    A_B = A[:, B]
+    # c_B is the part of c corresponding to the basis
+    c_B = c[B]
+    # Calculate y (the inverse of A_B times c_B, need it to calculate z)
+    y = np.linalg.inv(A_B.T) @ c_B
+    # get new z (objective value)
+    z = y @ b + z
+    # get new c (objective function)
+    c = c - A.T @ y
+    # modify b and A (update to get the canonical form)
+    b = np.linalg.inv(A_B) @ b
+    A = np.linalg.inv(A_B) @ A
 
     # get x
     # x = x_B + x_N
@@ -57,6 +74,6 @@ if __name__ == '__main__':
     # B3_1 = np.array([2, 4])
 
     # get canonical form
-    A, b, c, z, x = get_canonical_form(A, b, c, z, B)
+    A, b, c, z, x = get_canonical_form_with_x(A, b, c, z, B)
     print("----- Solution -----")
     print_problem_information(A, b, c, z, x, B)

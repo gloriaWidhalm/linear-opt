@@ -1,5 +1,13 @@
 import numpy as np
 
+# Define the matrix A, vector b, and cost vector c
+A = np.array([
+    [-1, 1, 0, 2],
+    [1, 0, 1, -3]
+])
+b = np.array([2, 1])
+c = np.array([-1, 0, 0, 2])
+
 # example 1
 A1 = np.array([
     [1, -2, 1],
