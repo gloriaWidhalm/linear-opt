@@ -97,8 +97,27 @@ if __name__ == "__main__":
     z = 0
     # define the initial basis
     initial_basis = np.array([0, 2, 3])
+    print("BEFORE SIMPLEX ALGORITHM: ")
+    print_problem_information(A, b, c, z)
 
     # Perform the Simplex algorithm
     A, b, c, z, basis = simplex_algorithm(A, b, c, z, initial_basis)
-    print("Next iteration: ")
-    A, b, c, z, basis = simplex_algorithm(A, b, c, z, initial_basis)
+    print("**NEXT ITERATION**")
+    # Perform the Simplex algorithm
+    A, b, c, z, basis = simplex_algorithm(A, b, c, z, basis)
+    # solution, objective_value, status = simplex_algorithm(A, b, c, z, initial_basis)
+    #
+    # print(f"Status: {status}")
+    # if solution is not None:
+    #     print(f"Solution: {solution}")
+    #     print(f"Objective Value: {objective_value}")
+
+    print("--------------------------")
+    #
+    # # check if the simplex algorithm is correct and compare to the solution from scipy (highs, because simplex is deprecated)
+    # # assume we have a canonical form
+    # solution_scipy = scipy.optimize.linprog(c, A_eq=A, b_eq=b, method="highs")
+    #
+    # print("solution scipy: ", solution_scipy.x)
+    # # print objective value
+    # print("objective value scipy: ", solution_scipy.fun)
